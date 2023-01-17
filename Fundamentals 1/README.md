@@ -326,6 +326,14 @@ This practice covers the following topics:
     OR last_name LIKE 'M%'
     ORDER BY last_name;
     ```
+    ***OLD ORACLE***
+    
+    ```sql
+    SELECT INITCAP(last_name) "Name", LENGTH(last_name) "Length"
+    FROM employees
+    WHERE (substr(last_name),1,1)= upper (:letter))
+    ORDER BY last_name asc
+    ```
 
    Rewrite the query so that the user is prompted to enter a letter that starts the last name. For example, if the user
    enters (capitalized) when prompted for a letter, then the output should show all employees whose last name starts
@@ -417,15 +425,35 @@ This practice covers the following topics:
           to_char (next_day (add_months (hire_date, 6), 1), 'FMDAY, "the" DDSPTH "of" MONTH, YYYY') review
    FROM employees;
     ```
+    ***Ways 2***
+    ```sql
+    SELECT last_name, hire_date, 
+    TO_CHAR (next_day (add_months (hire_date, 6), 'MONDAY'),
+    'Day, "the" fmDdSPTH "of" Month, YYYY') "Review"
+    FROM employees
+    ```
 
 3. Display the last name, hire date, and day of the week on which the employee started. Label the column ***DAY***.
    Order the results by the day of the week, starting with Monday.
    ```sql
-   SELECT last_name,
-          hire_date,
-          to_char (hire_date, 'FMDAY') day
+   SELECT last_name,hire_date,TO_CHAR (hire_date, 'FMDAY') Day
    FROM employees
-   ORDER BY to_char (hire_date, 'D');
+   ORDER BY CASE 
+          WHEN Day = 'MONDAY' THEN 1
+          WHEN Day = 'TUESDAY' THEN 2
+          WHEN Day = 'WEDNESDAY' THEN 3
+          WHEN Day = 'THURSDAY' THEN 4
+          WHEN Day = 'FRIDAY' THEN 5
+          WHEN Day = 'SATURDAY' THEN 6
+          WHEN Day = 'MONDAY' THEN 7
+    END ASC
+    ```
+    
+    ***Ways 2***
+    ```sql
+    SELECT last_name,hire_date,TO_CHAR (hire_date, 'FMDAY') "DAY"
+    FROM employees
+    ORDER BY mod(TO_CHAR(hire_date, 'D')+5,7)
     ```
 
 4. Create a query that displays the employees last names and commission amounts. If an employee does not earn
